@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Computer Organization & Architecture — Interactive Project</title>
+<style>
+:root{
+  --paper:#f4efe3; --ink:#182026; --muted:#5c625e; --panel:#fffaf0;
+  --blue:#4f6d7a; --green:#637a62; --gold:#a8844b; --line:#b9ad96;
+}
+*{box-sizing:border-box} body{margin:0;font-family:Georgia,serif;background:var(--paper);color:var(--ink);line-height:1.55}
+header{min-height:78vh;display:grid;place-items:center;text-align:center;padding:50px 20px;border-bottom:1px solid var(--line);
+background:radial-gradient(circle at 50% 25%,#fffaf0 0,#f4efe3 55%,#e9e0cf 100%)}
+.badge{letter-spacing:5px;font-size:13px}.hero h1{font-size:clamp(42px,7vw,82px);line-height:1;margin:20px 0 10px}.hero h2{font-weight:normal;font-style:italic;margin:0 0 25px}.hero p{max-width:700px;margin:auto;color:var(--muted)}
+.btn{display:inline-block;margin-top:28px;padding:12px 24px;border:1px solid var(--ink);color:var(--ink);text-decoration:none;background:#fffaf0;cursor:pointer}
+nav{position:sticky;top:0;background:rgba(244,239,227,.95);backdrop-filter:blur(8px);z-index:5;border-bottom:1px solid var(--line)}
+nav .navin{max-width:1100px;margin:auto;display:flex;gap:18px;overflow:auto;padding:10px 16px}
+nav a{color:var(--ink);text-decoration:none;white-space:nowrap;font-size:14px}
+main{max-width:1100px;margin:auto;padding:50px 18px}.section{margin-bottom:65px}.kicker{text-transform:uppercase;letter-spacing:3px;font-size:12px;color:var(--gold)}
+h2{font-size:34px;margin:7px 0 20px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);padding:22px;border-radius:10px;box-shadow:0 5px 18px #6b5d3d18}
+.card h3{margin-top:0}.chip{display:inline-block;padding:7px 12px;margin:4px;background:#eee6d5;border:1px solid var(--line);border-radius:30px}
+.arch{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:14px;align-items:center}
+.block{border:2px solid var(--ink);padding:18px;text-align:center;background:#f8f2e6;border-radius:8px}
+.cpu{grid-column:2;background:#e9e0cf}.arrow{text-align:center;font-size:28px}
+@media(max-width:700px){.arch{grid-template-columns:1fr}.cpu{grid-column:auto}.arrow{transform:rotate(90deg)}}
+.memory{display:flex;flex-direction:column;gap:8px;max-width:600px;margin:auto}
+.level{padding:16px;text-align:center;border:1px solid var(--line);border-radius:7px}
+.l1{background:#e9dfc8}.l2{background:#c9d4d8}.l3{background:#b5c2b3}.l4{background:#c8c8c3}
+.sim{background:#182026;color:#f6f0e4;border-radius:12px;padding:25px}
+.simboard{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:15px;align-items:center}
+.simbox{border:1px solid #aaa;padding:18px;text-align:center;border-radius:8px;min-height:120px}
+.simcpu{border:2px solid #e1c98d}.signal{color:#e1c98d;font-size:25px;text-align:center}
+button{font:inherit}.controls{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0}
+.controls button{padding:10px 15px;border:1px solid #cdbf9f;background:#eee2c7;cursor:pointer;border-radius:6px}
+.controls button:hover{filter:brightness(.96)}
+#status{min-height:45px;padding:12px;background:#10171c;border-left:4px solid #e1c98d}
+table{width:100%;border-collapse:collapse;background:var(--panel)}th,td{padding:12px;border:1px solid var(--line);text-align:left}th{background:#e9e0cf}
+footer{text-align:center;padding:35px;border-top:1px solid var(--line);color:var(--muted)}
+.code{font-family:monospace;background:#171d21;color:#f2ead9;padding:15px;border-radius:7px;overflow:auto}
+</style>
+</head>
+<body>
+<header id="top">
+  <div class="hero">
+    <div class="badge">BITS + LOGIC + ARCHITECTURE = COMPUTING</div>
+    <h1>COMPUTER ORGANIZATION<br>&amp; ARCHITECTURE</h1>
+    <h2>Inside the Brain of a Computer</h2>
+    <p>An interactive mini-project explaining the CPU, basic computer architecture, memory hierarchy, system buses and the fetch–decode–execute instruction cycle.</p>
+    <a class="btn" href="#simulator">Run the CPU Simulation ↓</a>
+  </div>
+</header>
+
+<nav><div class="navin">
+<a href="#overview">Overview</a><a href="#cpu">CPU</a><a href="#architecture">Architecture</a><a href="#memory">Memory</a><a href="#cycle">Instruction Cycle</a><a href="#bus">System Bus</a><a href="#simulator">Simulation</a><a href="#conclusion">Conclusion</a>
+</div></nav>
+
+<main>
+<section class="section" id="overview">
+<div class="kicker">01 — Foundation</div><h2>What is COA?</h2>
+<p><b>Computer Organization and Architecture (COA)</b> studies how a computer is designed and how its internal components work together to execute instructions. The CPU, memory, I/O devices and buses form a connected system. The CPU repeatedly fetches instructions, decodes them and executes them.</p>
+<div class="grid">
+<div class="card"><h3>Architecture</h3><p>Describes what the programmer can see: instruction set, registers, addressing modes and system behavior.</p></div>
+<div class="card"><h3>Organization</h3><p>Describes how the hardware implements that architecture: ALU, control unit, buses, memory and control signals.</p></div>
+<div class="card"><h3>Goal</h3><p>Understand how bits become instructions, how instructions are processed, and how hardware components communicate.</p></div>
+</div>
+</section>
+
+<section class="section" id="cpu">
+<div class="kicker">02 — The Brain</div><h2>CPU: Central Processing Unit</h2>
+<div class="grid">
+<div class="card"><h3>ALU — Arithmetic Logic Unit</h3><p>Performs arithmetic and logical operations such as addition, subtraction, AND, OR and comparisons.</p></div>
+<div class="card"><h3>CU — Control Unit</h3><p>Decodes instructions and generates control signals that coordinate the movement and processing of data.</p></div>
+<div class="card"><h3>Registers</h3><p>Very fast storage locations inside the CPU. Examples include the Program Counter (PC), Instruction Register (IR), MAR and MDR.</p></div>
+</div>
+</section>
+
+<section class="section" id="architecture">
+<div class="kicker">03 — System Structure</div><h2>Basic Computer Architecture</h2>
+<div class="arch">
+<div class="block">INPUT<br><small>Keyboard, Mouse, Sensors</small></div>
+<div class="arrow">→</div>
+<div class="block">MEMORY<br><small>Stores data &amp; instructions</small></div>
+<div class="arrow">↕</div>
+<div class="block cpu"><b>CPU</b><br><br>ALU &nbsp; | &nbsp; CONTROL UNIT<br><small>Registers • PC • IR</small></div>
+<div class="arrow">↕</div>
+<div class="block">OUTPUT<br><small>Monitor, Printer, Speaker</small></div>
+</div>
+<p style="text-align:center;margin-top:20px">The system bus provides the communication path between the CPU, memory and I/O.</p>
+</section>
+
+<section class="section" id="memory">
+<div class="kicker">04 — Memory</div><h2>Memory Hierarchy</h2>
+<p>Memory is organized in levels to balance speed, capacity and cost. Generally, the closer memory is to the CPU, the faster and smaller it is.</p>
+<div class="memory">
+<div class="level l1"><b>REGISTERS</b> — fastest, very small</div>
+<div class="level l2"><b>CACHE</b> — very fast, small</div>
+<div class="level l3"><b>RAM</b> — main working memory</div>
+<div class="level l4"><b>SECONDARY STORAGE</b> — SSD / HDD, large and persistent</div>
+</div>
+</section>
+
+<section class="section" id="cycle">
+<div class="kicker">05 — Instruction Processing</div><h2>Fetch → Decode → Execute → Store</h2>
+<div class="grid">
+<div class="card"><h3>1. Fetch</h3><p>The CPU obtains the next instruction from memory using the address held by the Program Counter.</p></div>
+<div class="card"><h3>2. Decode</h3><p>The Control Unit interprets the instruction and determines what operation is required.</p></div>
+<div class="card"><h3>3. Execute</h3><p>The required operation is performed, often using the ALU and CPU registers.</p></div>
+<div class="card"><h3>4. Store</h3><p>The result is placed in a register or memory when required, and the cycle continues.</p></div>
+</div>
+</section>
+
+<section class="section" id="bus">
+<div class="kicker">06 — Communication</div><h2>System Bus</h2>
+<table>
+<tr><th>Bus</th><th>Function</th><th>Example</th></tr>
+<tr><td>Data Bus</td><td>Transfers actual data and instructions.</td><td>CPU ↔ Memory</td></tr>
+<tr><td>Address Bus</td><td>Carries the address of the location to be accessed.</td><td>CPU → Memory</td></tr>
+<tr><td>Control Bus</td><td>Carries control and timing signals.</td><td>Read / Write / Interrupt</td></tr>
+</table>
+</section>
+
+<section class="section" id="simulator">
+<div class="kicker">07 — Interactive Demonstration</div><h2>Mini CPU Instruction-Cycle Simulator</h2>
+<p>Press the buttons in order to simulate a simple instruction. The demonstration uses <b>ADD R1, R2</b> to show how an instruction moves through the CPU.</p>
+<div class="sim">
+<div class="simboard">
+<div class="simbox">MEMORY<br><span id="mem">ADD R1, R2</span></div>
+<div class="signal" id="arrow1">→</div>
+<div class="simbox simcpu"><b>CPU</b><br><span id="cpuState">Waiting</span></div>
+</div>
+<div class="controls">
+<button onclick="step(1)">1. FETCH</button>
+<button onclick="step(2)">2. DECODE</button>
+<button onclick="step(3)">3. EXECUTE</button>
+<button onclick="step(4)">4. STORE</button>
+<button onclick="resetSim()">RESET</button>
+</div>
+<div id="status">Status: Click FETCH to begin.</div>
+</div>
+</section>
+
+<section class="section">
+<div class="kicker">08 — Example</div><h2>How an ADD Instruction Works</h2>
+<p>Suppose register R1 contains <b>5</b> and R2 contains <b>3</b>. An ADD instruction asks the CPU to calculate 5 + 3.</p>
+<div class="code">R1 = 5
+R2 = 3
+Instruction = ADD R1, R2
+
+ALU → 5 + 3 = 8
+Result → R1 = 8</div>
+<p style="margin-top:18px">This small example represents the same fundamental sequence used by much more complex programs: instructions are fetched, interpreted and executed by the processor.</p>
+</section>
+
+<section class="section" id="conclusion">
+<div class="kicker">09 — Conclusion</div><h2>From Bits to Processing</h2>
+<p>A computer works because its components cooperate. The CPU performs operations, memory stores information, buses carry data and control signals, and I/O devices allow interaction with the outside world. The instruction cycle provides the basic rhythm of processing.</p>
+<div class="grid">
+<div class="card"><h3>Key Takeaway</h3><p><b>CPU + Memory + I/O + Buses</b> form the core organization of a computer system.</p></div>
+<div class="card"><h3>Learning Outcome</h3><p>After exploring this project, a student can trace how an instruction travels from memory to the CPU and becomes a result.</p></div>
+</div>
+</section>
+</main>
+
+<footer>
+<b>COMPUTER ORGANIZATION &amp; ARCHITECTURE</b><br>
+Academic Mini Project • Interactive Demonstration
+</footer>
+
+<script>
+let current=0;
+const messages={
+1:["Fetching instruction…","Memory sends ADD R1, R2 to the CPU."],
+2:["Decoding instruction…","The Control Unit identifies the ADD operation and its operands."],
+3:["Executing instruction…","The ALU performs the operation: 5 + 3 = 8."],
+4:["Storing result…","The result 8 is written to R1. Instruction complete."]
+};
+function step(n){
+  if(n!==current+1){document.getElementById("status").textContent="Status: Please follow the sequence — "+(current+1)+". "+["FETCH","DECODE","EXECUTE","STORE"][current]+" next.";return;}
+  current=n;
+  document.getElementById("cpuState").textContent=messages[n][0];
+  document.getElementById("status").textContent="Status: "+messages[n][1];
+  if(n===4) document.getElementById("mem").textContent="Result = 8";
+}
+function resetSim(){
+ current=0;
+ document.getElementById("cpuState").textContent="Waiting";
+ document.getElementById("mem").textContent="ADD R1, R2";
+ document.getElementById("status").textContent="Status: Click FETCH to begin.";
+}
+</script>
+</body>
+</html>
